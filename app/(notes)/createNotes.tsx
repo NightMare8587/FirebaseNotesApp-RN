@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import * as SecureStore from 'expo-secure-store'
@@ -29,7 +29,6 @@ export default function createNotes() {
   
     loadUID()
     const[note, setNote] = useState("");
-
     const createNotes = async () => {
         if(note == "") {
             return;

@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import * as SecureStore from 'expo-secure-store'
@@ -14,10 +14,15 @@ const firebaseConfig = {
   appId: "1:432933602327:web:4c3dac73d6370bd19e4852",
   measurementId: "G-B7Z8R86K2B"
 };
+import { useIsFocused } from '@react-navigation/native';
+import { collection, doc, getDocs, getFirestore } from 'firebase/firestore';
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 export default function indes() {
   const router = useExpoRouter();
+  const isFocused = useIsFocused();
+  const [notes, setNotes] = useState([]);
   const [userUID, setUserUID] = useState("");
   const loadUID = async () => {
     const uid = await SecureStore.getItemAsync("uid");
@@ -29,7 +34,21 @@ export default function indes() {
   const nextScreen = () => {
     router.push("createNotes")
   }
-  if(userUID == null || userUID == "") return;
+  useEffect(() => {
+    const fetchNotes = async () => {
+      const ref = collection(db, "users", userUID, "notes");
+
+      const result = await getDocs(ref);
+
+      setNotes([]);
+      const notesList = [];
+      result.forEach((doc) => {
+          console.log(doc.data)
+      })
+    }
+    fetchNotes(); 
+  },[useIsFocused]);
+  if(userUID == null || userUID == "") {return;}
   return (
     <View style={loginStyles.container}>
       <TouchableOpacity style={loginStyles.fab} onPress={nextScreen}>
