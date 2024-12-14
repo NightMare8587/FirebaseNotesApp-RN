@@ -1,9 +1,10 @@
-import { View, Text } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React, { useState } from 'react'
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import * as SecureStore from 'expo-secure-store'
 import { useExpoRouter } from 'expo-router/build/global-state/router-store';
+import { router } from 'expo-router';
 const firebaseConfig = {
   apiKey: "AIzaSyAGKPfPIU8GRb3sdm1japx7QaYHLBzHMhw",
   authDomain: "notesapp-rn.firebaseapp.com",
@@ -16,6 +17,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 export default function indes() {
+  const router = useExpoRouter();
   const [userUID, setUserUID] = useState("");
   const loadUID = async () => {
     const uid = await SecureStore.getItemAsync("uid");
@@ -24,10 +26,45 @@ export default function indes() {
 
   loadUID()
 
+  const nextScreen = () => {
+    router.push("createNotes")
+  }
   if(userUID == null || userUID == "") return;
   return (
-    <View>
-      <Text>Welcome</Text>
+    <View style={loginStyles.container}>
+      <TouchableOpacity style={loginStyles.fab} onPress={nextScreen}>
+        <Image
+        style={loginStyles.imgStyle}
+        source={require("../../assets/images/add.png")}/>
+      </TouchableOpacity>
     </View>
   )
 }
+
+const loginStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#cacaca'
+  },
+  cardContainer: {
+    backgroundColor: 'white',
+    marginHorizontal: 10,
+    width: 'auto'
+  },
+  fab: {
+    zIndex: 2,
+    borderRadius: 100,
+    backgroundColor: 'blue',
+    height: 55,
+    width: 55,
+    alignSelf: 'flex-end',
+    position: 'absolute',
+    bottom: 40,
+    right: 25
+  },
+  imgStyle: {
+    justifyContent: 'center',
+    marginHorizontal: 'auto',
+    marginVertical: 'auto'
+  }
+})
